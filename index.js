@@ -1,0 +1,35 @@
+const express = require('express') //importar modulo express do npm
+
+const app = express() // inicializa o servidor express e salva na variável app
+const PORT = 8000 // separa uma porta para rodar o servidor
+app.use(express.json())//fala para o servidor que vai receber dados em JSON
+
+const BancoDeDados = [
+    {
+        id:1,
+        titulo:"Desenvolvimento de sistemas",
+        curso:"Técnico em desenvolvimento de sistemas",
+        turma:"3B",
+        professor: "Ramon"
+    }
+]
+// criar as minhas rotas
+app.get('/aulas', (req,res)=>{
+    res.status(200).send(BancoDeDados)
+})
+
+app.get('/aulas/:id', (req,res)=>{
+    console.log(req.params.id)
+    //fazer uma busca no array BancoDeDados, pelo id recebido
+    res.send('qualquer coisa')
+})
+
+app.post('/aulas', (req,res)=>{
+    const dados = req.body
+    dados['id'] = BancoDeDados.length + 1
+    BancoDeDados.push(dados)
+    res.status(201).send(dados)
+})
+
+
+app.listen(PORT, ()=> {console.log('Servidor online')}) // bota o servidor para ouvir requisições 
