@@ -31,5 +31,32 @@ app.post('/aulas', (req,res)=>{
     res.status(201).send(dados)
 })
 
+app.put('/aulas/:id', (req, res)=> {
+    //pegar id da rota
+    const id = req.params.id
+    console.log(id)
+    //procurar o id no array
+    const usuario = BancoDeDados.find(user => user.id == id)
+    if(!usuario){
+        res.status(404).json({msg:"Usuário não encontrado"})
+    }
+    //modificar os campos
+    //atualizar o array
+    res.send('ok')
+
+})
+
+app.delete('/aulas/:id', (req,res)=>{
+    const id = req.params.id
+    console.log(id)
+    //procurar o id no array
+    const userIndex = BancoDeDados.findIndex(user => user.id == id)
+    if(!userIndex === -1){
+        res.status(404).json({msg:"Usuário não encontrado"})
+    }
+    BancoDeDados.splice(userIndex,1)
+    res.status(204).send()
+
+})
 
 app.listen(PORT, ()=> {console.log('Servidor online')}) // bota o servidor para ouvir requisições 
