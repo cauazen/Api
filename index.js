@@ -44,42 +44,66 @@ app.post('/aulas', (req,res)=>{
         dados['id'] = aulas.length + 1
         //adicionar a nova aula, no array de aulas
         aulas.push(dados)
-        fs.writeFile('bancoDeDados.json', aulas,(err)=>{
+        fs.writeFile('bancoDeDados.json', JSON.stringify(aulas),(err)=>{
             if(err){
-                res.status(500).json({msg:'Errp np servidor'})
+                res.status(500).json({msg:'Erro no servidor'})
             }
             res.status(201).send(dados)
         })
     })
-    res.status(201).send(dados)
 })
 
+//atualizar
 app.put('/aulas/:id', (req, res)=> {
     //pegar id da rota
     const id = req.params.id
     console.log(id)
-    //procurar o id no array
-    const usuario = BancoDeDados.find(user => user.id == id)
-    if(!usuario){
-        res.status(404).json({msg:"Usuário não encontrado"})
+    fs.readFile('bancoDeDados.json', 'utf-8', (err,data)=>{ //abrindo o arquivo banco de dados e lendo ele no formato utf-8
+        if(err){ //testa se ouve algum erro
+            res.status(500).json({msg:"erro no servidor"}) // em caso de erro devolve o codigo 500 para o usuario
+        }
+    const aulas = JSON.parse(data)
+    const aulaIndex = aulas.findIndex(aula => aula.id == id)
+        if(aulaIndex !== -1){
+        const dados = req.body
+        for(keys in dados){
+            aulas[aulaIndex][key] = dados[key]
+        }
+        fs.writeFile('bancoDeDados.json', JSON.stringify(aulas),(err)=>{
+            if(err){
+                res.status(500).json({msg:'Erro no servidor'})
+            }
+            res.status(201).send(dados)
+        })
     }
     //modificar os campos
     //atualizar o array
     res.send('ok')
-
+    })
 })
 
 app.delete('/aulas/:id', (req,res)=>{
     const id = req.params.id
     console.log(id)
-    //procurar o id no array
-    const userIndex = BancoDeDados.findIndex(user => user.id == id)
-    if(!userIndex === -1){
-        res.status(404).json({msg:"Usuário não encontrado"})
+    fs.readFile('bancoDeDados.json', 'utf-8', (err,data)=>{ //abrindo o arquivo banco de dados e lendo ele no formato utf-8
+        if(err){ //testa se ouve algum erro
+            res.status(500).json({msg:"erro no servidor"}) // em caso de erro devolve o codigo 500 para o usuario
+        }
+    const aulas = JSON.parse(data)
+    const aulaIndex = aulas.findIndex(aula => aula.id == id)
+    if(aulaIndex === -1){
+        aulas.splice(aulaIndex,1)
+        fs.writeFile('bancoDeDados.json', JSON.stringify(aulas),(err)=>{
+            if(err){
+                res.status(500).json({msg:'Erro no servidor'})
+            }
+            res.status(201).send(dados)
+            })
+    }else{
+        res.status(404).json({msg:'Erro do usuario'})
     }
-    BancoDeDados.splice(userIndex,1)
-    res.status(204).send()
-
+        
 })
+
 
 app.listen(PORT, ()=> {console.log('Servidor online')}) // bota o servidor para ouvir requisições 
